@@ -1,0 +1,64 @@
+import Foundation
+import PlaygroundSupport
+
+// Создаем объект URL с помощью строки
+if let url = URL(string: "http://google.com") {
+
+
+    // Вызываем URLSession.shared, создаем для сессии DataTask
+    let task = URLSession.shared.dataTask(with: url) { data, response, error in
+
+        // Печатаем ответ
+        print("Server's response is: \(response.debugDescription)")
+    }
+
+    // начинаем выполнение
+    task.resume()
+
+} else {
+    print("Cannot create URL")
+}
+PlaygroundPage.current.needsIndefiniteExecution = true
+--------
+let wifiSessionConfiguration = URLSessionConfiguration.default
+wifiSessionConfiguration.timeoutIntervalForResource = 10
+wifiSessionConfiguration.allowsCellularAccess = false
+
+let wifiSession = URLSession(configuration: wifiSessionConfiguration)
+----------------------
+ print(String(data: data!, encoding: .utf8)!)
+----------------------
+
+class SessionDelegate: NSObject, URLSessionDataDelegate {
+    static let shared = SessionDelegate()
+
+    func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
+        print("Session fails")
+    }
+
+
+    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        print("Session will do auth challenge")
+        completionHandler(.performDefaultHandling, nil)
+    }
+
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        print("Session Finished")
+    }
+}
+
+
+// Создаем объект URL с помощью строки
+if let url = URL(string: "http://google.com") {
+
+
+    // Вызываем URLSession.shared, создаем для сессии DataTask
+    let session = URLSession(configuration: URLSessionConfiguration.default, delegate: SessionDelegate.shared, delegateQueue: nil)
+    let task = session.dataTask(with: url)
+
+    // начинаем выполнение
+    task.resume()
+
+} else {
+    print("Cannot create URL")
+}
