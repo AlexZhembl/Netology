@@ -1,0 +1,152 @@
+// https://jsonplaceholder.typicode.com/comments?postId=1&limit=5
+//
+var urlComponents = URLComponents()
+urlComponents.scheme = "https"
+urlComponents.host = "jsonplaceholder.typicode.com"
+urlComponents.path = "/comments"
+urlComponents.query = "postId=1&limit=5"
+
+if let url = urlComponents.url {
+    URLSession.shared.dataTask(with: url) { data, response, error in
+
+        if let unwrappedData = data,
+           let serialized = try? JSONSerialization.jsonObject(with: unwrappedData, options: []) {
+            print(serialized)
+        }
+    }.resume()
+
+//    let urlRequest = URLRequest(url: url)
+//    URLSession.shared.dataTask(with: urlRequest) {data, response, error in }.resume()
+}
+------------------------------------------------------------------
+// https://jsonplaceholder.typicode.com/comments?postId=1&limit=5
+//
+var urlComponents = URLComponents()
+urlComponents.scheme = "https"
+urlComponents.host = "jsonplaceholder.typicode.com"
+urlComponents.path = "/posts"
+
+struct Post: Codable {
+    let userId: String
+    let id: String
+    let title: String
+    let body: String
+}
+let newPost = Post(userId: "123", id: "321", title: "New post title", body: "New post body")
+
+if let url = urlComponents.url {
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+
+    if let data = try? JSONEncoder().encode(newPost) {
+        request.httpBody = data
+    } else {
+        print("Cannot create JSON from new post")
+    }
+
+    URLSession.shared.dataTask(with: request) { data, response, error in
+        print(response)
+    }.resume()
+}
+---------------------------------------------
+var urlComponents = URLComponents()
+urlComponents.scheme = "https"
+urlComponents.host = "jsonplaceholder.typicode.com"
+urlComponents.path = "/posts"
+urlComponents.query = "apiKey=1234567890987654321" // Пример apiKey
+
+let basicAuthToken = "dXNlcjpwYXNzd29yZA==" // ("user:password").base64
+let bearerAuthTokenFromServer = "AbCdEf123456"
+
+if let url = urlComponents.url {
+    var request = URLRequest(url: url)
+    request.httpMethod = "GET"
+
+    request.addValue("Basic \(basicAuthToken)", forHTTPHeaderField: "Authorization") // Basic auth
+ //   request.addValue("Bearer \(bearerAuthTokenFromServer)", forHTTPHeaderField: "Authorization") // Bearer auth
+    print(request.allHTTPHeaderFields)
+
+    URLSession.shared.dataTask(with: request) { data, response, error in
+        print(response)
+    }.resume()
+}
+----------------------------------------------
+
+var urlComponents = URLComponents()
+urlComponents.scheme = "https"
+urlComponents.host = "jsonplaceholder.typicode.com"
+urlComponents.path = "/posts/1"
+
+if let url = urlComponents.url {
+    var request = URLRequest(url: url)
+    request.httpMethod = "GET"
+
+    URLSession.shared.downloadTask(with: request) { fileUrl, response, error in
+        if let downloadedUrl = fileUrl {
+            print(downloadedUrl)
+        }
+    }.resume()
+}
+-----------------------------------------------
+var urlComponents = URLComponents()
+urlComponents.scheme = "https"
+urlComponents.host = "jsonplaceholder.typicode.com"
+urlComponents.path = "/posts"
+
+class SessionDelegate: NSObject, URLSessionDownloadDelegate {
+    static let shared = SessionDelegate()
+
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        print(location)
+    }
+
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+        let progress = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
+        print(progress)
+    }
+}
+
+if let url = urlComponents.url {
+    var request = URLRequest(url: url)
+    request.httpMethod = "GET"
+
+    let urlSession = URLSession(configuration: .default, delegate: SessionDelegate.shared, delegateQueue: nil)
+    urlSession.downloadTask(with: request).resume()
+}
+--------------------------------------------------------------
+var urlComponents = URLComponents()
+urlComponents.scheme = "http"
+urlComponents.host = "127.0.0.1"
+urlComponents.port = 5000
+urlComponents.path = "/uploader"
+
+struct MyUser: Encodable {
+    let userName: String
+    let image: UIImage
+
+    enum CodingKeys: String, CodingKey {
+        case userName
+        case image
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encode(userName, forKey: .userName)
+        if let data = image.jpegData(compressionQuality: 1.0) {
+            try container.encode(data, forKey: .image)
+        }
+    }
+}
+let myUser = MyUser(userName: "Test user", image: UIImage(named: "apple_tv") ?? UIImage())
+
+if let url = urlComponents.url {
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+
+    if let data = try? JSONEncoder().encode(myUser) {
+        URLSession.shared.uploadTask(with: request, from: data) { data, response, error in
+            print(String(data: data!, encoding: .utf8)!)
+        }.resume()
+    }
+}
