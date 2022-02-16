@@ -1,0 +1,23 @@
+let manager = FileManager.default
+let documentsUrl = manager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+
+print(documentsUrl)
+------------------------------------------------------------------------------------------------------------
+
+let manager = FileManager.default
+let documentsUrl = manager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+
+let fileUrl = documentsUrl.appendingPathComponent("123.txt")
+print(fileUrl)
+
+if manager.fileExists(atPath: fileUrl.path) {
+    let attributes = manager.attributesOfItem(atPath: fileUrl.path)
+    print(attributes[.creationDate])
+}
+
+------------------------------------------------------------------------------------------------------------
+let contents = manager.contentsOfDirectory(at: documentsUrl, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles])
+for file in contents {
+    let filePath = file.path
+    print("File path: \(filePath)")
+}
