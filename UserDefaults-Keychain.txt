@@ -1,0 +1,269 @@
+// Если передаем Nil, то выберем первый контейнер (единственный)
+        let defaultContainerUrl = FileManager.default.url(forUbiquityContainerIdentifier: nil)
+        guard let defaultContainerUrl = defaultContainerUrl else { return }
+        print(defaultContainerUrl)
+
+        let cloudFileUrl = defaultContainerUrl
+            .appendingPathComponent("Documents")
+            .appendingPathComponent("file_123.txt")
+        print(cloudFileUrl)
+
+        try? FileManager.default.startDownloadingUbiquitousItem(at: cloudFileUrl)
+---------------------------------------------------------------------------------------
+let defaults = UserDefaults.standard
+defaults.setValue(123, forKey: "myNumber") // сохраняем на диск
+
+let savedValue = defaults.integer(forKey: "myNumber") // считываем с диска
+print(savedValue)
+------------------------------------------------------------------------------
+struct User: Codable {
+    let name: String
+    let surname: String
+
+    let isActive: Bool
+    let userId: Int
+}
+
+let user = User(name: "Jack", surname: "Daniels", isActive: true, userId: 1032)
+
+let defaults = UserDefaults.standard
+if let data = try? JSONEncoder().encode(user) {
+    defaults.setValue(data, forKey: "myUser") // сохраняем на диск
+}
+
+if let savedValue = defaults.data(forKey: "myUser") { // считываем с диска
+    if let user = try? JSONDecoder().decode(User.self, from: savedValue) {
+        print("Username is \(user.name)")
+    }
+}
+------------------------------------------------------------------------------
+NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: nil, queue: nil) { _ in
+    print("User default changed")
+}
+
+let defaults = UserDefaults.standard
+defaults.setValue(123, forKey: "myNumber") // сохраняем на диск
+print("Value added")
+
+let savedValue = defaults.integer(forKey: "myNumber") // считываем с диска
+print(savedValue)
+------------------------------------------------------------------------------
+if let defaults = UserDefaults(suiteName: "group.com.netology.netology") {
+    defaults.setValue(123, forKey: "myNumber") // сохраняем на диск
+    print("Value added")
+
+    let savedValue = defaults.integer(forKey: "myNumber") // считываем с диска
+    print(savedValue)
+}
+else {
+    print("User defaults container doesn't exist")
+}
+------------------------------------------------------------------------------
+
+struct Credentials {
+    let username: String
+    var password: String
+    let serviceName = "UserCredentials"
+}
+
+override func viewDidLoad() {
+        super.viewDidLoad()
+
+        view.backgroundColor = .green
+
+        var credentials = Credentials(username: "netology@gmail.com", password: "qwerty")
+        setPassword(with: credentials)
+
+        credentials.password = ""
+        if let pass = retrievePassword(with: credentials) {
+            print("Сохраненный пароль: \(pass)")
+        }
+
+        credentials.password = "SomeVerySecurePassword123"
+        updatePassword(with: credentials)
+
+        credentials.password = ""
+        deletePassword(with: credentials)
+    }
+
+    func setPassword(with credentials: Credentials) {
+        // Переводим пароль в объект класс Data
+        guard let passData = credentials.password.data(using: .utf8) else {
+            print("Невозможно получить Data из пароля")
+            return
+        }
+
+        // Создаем атрибуты для хранения файла
+        let attributes = [
+            kSecClass: kSecClassGenericPassword,
+            kSecValueData: passData,
+            kSecAttrAccount: credentials.username,
+            kSecAttrService: credentials.serviceName,
+        ] as CFDictionary
+
+        // Добавляем новую запись в Keychain
+        let status = SecItemAdd(attributes, nil)
+
+        guard status == errSecDuplicateItem || status == errSecSuccess else {
+            print("Невозможно добавить пароль, ошибка номер: \(status)")
+            return
+        }
+
+        print("Новый пароль добавлен успешно")
+    }
+
+    func retrievePassword(with credentials: Credentials) -> String? {
+        // Создаем поисковые атрибуты
+        let query = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrService: credentials.serviceName,
+            kSecAttrAccount: credentials.username,
+            kSecReturnData: true
+        ] as CFDictionary
+
+        // Объявляем ссылку на объект, которая в будущем будет указывать на полученную запись Keychain
+        var extractedData: AnyObject?
+        // Запрашиваем запись в keychain
+        let status = SecItemCopyMatching(query, &extractedData)
+
+        guard status == errSecItemNotFound || status == errSecSuccess else {
+            print("Невозможно получить пароль, ошибка номер: \(status)")
+            return nil
+        }
+
+        guard status != errSecItemNotFound else {
+            print("Пароль не найден в Keychain")
+            return nil
+        }
+
+        guard let passData = extractedData as? Data,
+              let password = String(data: passData, encoding: .utf8) else {
+            print("невозможно преобразовать data в пароль")
+            return nil
+        }
+
+        return password
+    }
+
+    func updatePassword(with credentials: Credentials) {
+        // Переводим пароль в объект класс Data
+        guard let passData = credentials.password.data(using: .utf8) else {
+            print("Невозможно получить Data из пароля")
+            return
+        }
+
+        // Создаем поисковые атрибуты
+        let query = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrService: credentials.serviceName,
+            kSecAttrAccount: credentials.username,
+            kSecReturnData: false // не обязательно, false по- умолчанию
+        ] as CFDictionary
+
+        let attributesToUpdate = [
+            kSecValueData: passData,
+        ] as CFDictionary
+
+        let status = SecItemUpdate(query, attributesToUpdate)
+
+        guard status == errSecSuccess else {
+            print("Невозможно обновить пароль, ошибка номер: \(status)")
+            return
+        }
+
+        print("Новый пароль обновлен успешно")
+    }
+
+    func deletePassword(with credentials: Credentials) {
+        // Создаем поисковые атрибуты
+        let query = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrService: credentials.serviceName,
+            kSecAttrAccount: credentials.username,
+            kSecReturnData: false  // не обязательно, false по- умолчанию
+        ] as CFDictionary
+
+        let status = SecItemDelete(query)
+
+        guard status == errSecSuccess || status == errSecItemNotFound else {
+            print("Невозможно удалить пароль, ошибка номер: \(status)")
+            return
+        }
+
+        print("Новый пароль удален успешно")
+    }
+  ------------------------------------------------------------------------------
+
+  override func viewDidLoad() {
+        super.viewDidLoad()
+
+        view.backgroundColor = .green
+
+        let credentials = Credentials(username: "netology@gmail.com", password: "qwerty")
+        setPasswordOnlyIfUnlocked(with: credentials)
+    }
+
+    func setPasswordOnlyIfUnlocked(with credentials: Credentials) {
+        // Переводим пароль в объект класс Data
+        guard let passData = credentials.password.data(using: .utf8) else {
+            print("Невозможно получить Data из пароля")
+            return
+        }
+
+        // Создаем атрибуты для хранения файла
+        let attributes = [
+            kSecClass: kSecClassGenericPassword,
+            kSecValueData: passData,
+            kSecAttrAccount: credentials.username,
+            kSecAttrService: credentials.serviceName,
+            kSecAttrAccessible: kSecAttrAccessibleWhenUnlockedThisDeviceOnly, // Если заканчивается на ThisDeviceOnly - то пароль не восстановится надругих девайсах
+        ] as CFDictionary
+
+        // Добавляем новую запись в Keychain
+        let status = SecItemAdd(attributes, nil)
+
+        guard status == errSecDuplicateItem || status == errSecSuccess else {
+            print("Невозможно добавить пароль, ошибка номер: \(status)")
+            return
+        }
+
+        print("Новый пароль добавлен успешно")
+    }
+    --------------------------------------------------------------
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        view.backgroundColor = .green
+        callOnDemandResources()
+    }
+
+    func callOnDemandResources() {
+        let request = NSBundleResourceRequest(tags: ["BigImages"])
+        request.conditionallyBeginAccessingResources { [weak self] allResourcesAvailable in
+            if allResourcesAvailable {
+                print("Ресурсы доступны")
+                DispatchQueue.main.async {
+                    self?.setupImageView()
+                }
+
+            }
+            else {
+                print("Начинаю скачивать ресурсы")
+                request.beginAccessingResources { error in
+                    if let error = error {
+                        print("Ошибка: \(error.localizedDescription)")
+                        return
+                    }
+
+                    DispatchQueue.main.async {
+                        self?.setupImageView()
+                    }
+                }
+            }
+        }
+    }
+
+    func setupImageView() {
+        let image = UIImage(named: "bigImage_1")
+        imageView.image = image
+    }
