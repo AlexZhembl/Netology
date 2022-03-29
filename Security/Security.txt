@@ -1,0 +1,146 @@
+
+if let url = URL(string: "https://google.com") {
+           ApiManager.shared.requestUrl(url)
+       }
+
+ final class ApiManager {
+
+     static let shared = ApiManager()
+     static let apiKey = "ad4b0eaf4631d2e579a861fadbcbc1524d530b80d35b6483d_MY_GREAT_KEY"
+
+    func requestUrl(_ url: URL) {
+        var urlRequest = URLRequest(url: url)
+        urlRequest.setValue(ApiManager.apiKey, forHTTPHeaderField: "API-KEY")
+
+        print(urlRequest.allHTTPHeaderFields)
+
+        URLSession.shared.dataTask(with: urlRequest) { data, response, error in
+            print(response)
+        }.resume()
+    }
+}
+--------------------------------------------------------------------------------
+static let apiKey = "bc5c1fb"
+
+let key = ApiManager.apiKey.compactMap { symbol in
+            return symbol.asciiValue
+        }
+        .reduce("", { prevResult, currentSymbolCode in
+            let character = UnicodeScalar(currentSymbolCode - 1)
+            return prevResult + String(character)
+        })
+  --------------------------------------------------------------------------------
+
+  static let apiKey = "ad4b0eaf4631d2e579a861fadbcbc1524d530b80d35b6483d_MY_GREAT_KEY"
+
+        if let encodedData = ApiManager.apiKey.data(using: .utf8) {
+            let arrayOfHex = encodedData
+                .map { String(format: "0x%02x", $0) }
+
+            print(arrayOfHex)
+        }
+  --------------------------------------------------------------------------------
+  static let apiKey: [UInt8] = [0x61, 0x64, 0x34, 0x62, 0x30, 0x65, 0x61, 0x66, 0x34, 0x36, 0x33, 0x31, 0x64, 0x32, 0x65, 0x35, 0x37, 0x39, 0x61, 0x38, 0x36, 0x31, 0x66, 0x61, 0x64, 0x62, 0x63, 0x62, 0x63, 0x31, 0x35, 0x32, 0x34, 0x64, 0x35, 0x33, 0x30, 0x62, 0x38, 0x30, 0x64, 0x33, 0x35, 0x62, 0x36, 0x34, 0x38, 0x33, 0x64, 0x5f, 0x4d, 0x59, 0x5f, 0x47, 0x52, 0x45, 0x41, 0x54, 0x5f, 0x4b, 0x45, 0x59]
+
+        let data = Data(ApiManager.apiKey)
+        let key = String(data: data, encoding: .utf8)
+        urlRequest.setValue(key, forHTTPHeaderField: "API-KEY")
+--------------------------------------------------------------------------------
+let container = NSPersistentContainer(name: "DatabaseModel")
+container.loadPersistentStores { description, error in
+           print(description)
+           if let error = error {
+               fatalError("Unable to load persistent stores: \(error)")
+           }
+       }
+
+       self.persistentContainer = container
+--------------------------------------------------------------------------------
+
+// Проверяем наличие нашей базы по ее url
+    if let storeUrl = container.persistentStoreDescriptions.first?.url {
+        print(storeUrl)
+
+        let options: [AnyHashable: Any] = [NSPersistentStoreFileProtectionKey: FileProtectionType.complete]
+        try? container.persistentStoreCoordinator.addPersistentStore(type: .sqlite,
+                                                                     configuration: nil,
+                                                                     at: storeUrl,
+                                                                     options: options)
+    }
+  --------------------------------------------------------------------------------
+
+  if let url = URL(string: "cydia://") {
+           if UIApplication.shared.canOpenURL(url) {
+               print("Jailbroken")
+           }
+           else {
+               print("Not jailbroken")
+           }
+       }
+
+
+       let jailBreakTestText = "Test for JailBreak"
+        do {
+            try jailBreakTestText.write(toFile:"/private/jailBreakTestText.txt", atomically: true, encoding: .utf8)
+            print("Jailbroken")
+        } catch {
+            print("Not jailbroken")
+        }
+--------------------------------------------------------------------------------
+if let url = URL(string: "https://netology.ru") {
+            ApiManager.shared.requestUrl(url)
+        }
+
+final class ApiManager: NSObject {
+
+    static let shared = ApiManager()
+    private lazy var secureSession = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
+
+    func requestUrl(_ url: URL) {
+        secureSession.dataTask(with: url) { data, response, error in
+         //   print(response)
+        }.resume()
+    }
+
+}
+
+extension ApiManager: URLSessionDelegate {
+
+    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+
+        // Проверяем, пытается ли URLSession проверить сертификат
+        guard let serverTrust = challenge.protectionSpace.serverTrust,
+              let certificatesArray = SecTrustCopyCertificateChain(serverTrust) as? [SecCertificate] else { return }
+
+
+        // Детектируем SSL проверки, которые предоставляет сервер
+        let policies = NSMutableArray();
+        policies.add(SecPolicyCreateSSL(true, (challenge.protectionSpace.host as CFString?)))
+        SecTrustSetPolicies(serverTrust, policies);
+
+        // Проверяем сертификат сервера
+        var error: CFError?
+        let isServerTrusted = SecTrustEvaluateWithError(serverTrust, &error)
+
+
+        // Подгружаем локальный сертификат
+        guard let pathToCert = Bundle.main.url(forResource: "netology.ru", withExtension: "cer"),
+              let localCertificateData = try? Data(contentsOf: pathToCert) else { return }
+
+        let matchedCerts = certificatesArray.filter { cert in
+            let remoteCertificateData = SecCertificateCopyData(cert) as Data
+            return remoteCertificateData == localCertificateData
+        }
+
+        // Сравниваем сертификаты
+        if isServerTrusted && !matchedCerts.isEmpty {
+
+            let credential = URLCredential(trust: serverTrust)
+            print("Certificate matching = true")
+            completionHandler(.useCredential, credential)
+        } else {
+            print("Certificate matching = false")
+            completionHandler(.cancelAuthenticationChallenge, nil)
+        }
+    }
+}
