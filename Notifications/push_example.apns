@@ -1,0 +1,8 @@
+{
+    "Simulator Target Bundle": "nikita-pavlov.local-notification-demo",
+    "aps": {
+        "alert": "Push Notifications Test-123123",
+        "sound": "default",
+        "badge": 10
+    }
+}
