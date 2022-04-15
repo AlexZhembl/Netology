@@ -1,0 +1,211 @@
+{
+   "firstName": "Иван",
+   "lastName": "Иванов",
+   "address": {
+       "streetAddress": "Московское ш., 101, кв.101",
+       "city": "Ленинград",
+       "postalCode": 101101,
+       "isValid": true
+   },
+   "phoneNumbers": [ "812 123-1234", "916 123-4567" ],
+   "creditCard": null
+}
+----------------------------------------
+<person>
+  <firstName>Иван</firstName>
+  <lastName>Иванов</lastName>
+  <address>
+    <streetAddress>Московское ш., 101, кв.101</streetAddress>
+    <city>Ленинград</city>
+    <postalCode>101101</postalCode>
+  </address>
+  <phoneNumbers>
+    <phoneNumber>812 123-1234</phoneNumber>
+    <phoneNumber>916 123-4567</phoneNumber>
+  </phoneNumbers>
+</person>
+
+<person firstName="Иван" lastName="Иванов">
+  <address streetAddress="Московское ш., 101, кв.101" city="Ленинград" postalCode="101101" />
+  <phoneNumbers>
+    <phoneNumber>812 123-1234</phoneNumber>
+    <phoneNumber>916 123-4567</phoneNumber>
+  </phoneNumbers>
+</person>
+-------------------------------------------
+// Some label
+let titleLabel = UILabel()
+
+// Создаем объект URL с помощью строки
+if let url = URL(string: "https://jsonplaceholder.typicode.com/posts/1") {
+
+    // Вызываем URLSession.shared, создаем для сессии DataTask
+    let task = URLSession.shared.dataTask(with: url) { data, response, error in
+
+        if let unwrappedData = data {
+            if let converted = String(data: unwrappedData, encoding: .utf8) {
+                print(converted)
+                titleLabel.text = converted // Невозможно положить поле title из JSON
+            }
+        }
+        // Печатаем ответ
+     //   print("Server's response is: \(data)")
+    }
+
+    // начинаем выполнение
+    task.resume()
+
+} else {
+    print("Cannot create URL")
+}
+--------------------------------------------------
+
+// Some label
+let titleLabel = UILabel()
+
+        if let unwrappedData = data {
+            do {
+                let serializedDictionary = try JSONSerialization.jsonObject(with: unwrappedData, options: [])
+                print(serializedDictionary)
+
+                // Приводим serializedDictionary к [String: Any]
+                if let dict = serializedDictionary as? [String: Any],
+                   // Приводим поле title к типу String
+                    let title = dict["title"] as? String {
+                    titleLabel.text = title
+
+                    print(titleLabel.text ?? "")
+                }
+            }
+            catch let error {
+                print(error.localizedDescription)
+            }
+        }
+
+--------------------------------
+
+// Codable = Encodable & Decodable
+struct User: Codable {
+    let userId: Int
+    let id: Int
+    let title: String
+    let body: String
+}
+
+if let unwrappedData = data {
+    do {
+        let user = try JSONDecoder().decode(User.self, from: unwrappedData)
+        print(user.title)
+    }
+    catch let error {
+        print(error.localizedDescription)
+    }
+}
+-------------------------------------
+
+// Codable = Encodable & Decodable
+struct User: Codable {
+    let userId: Int
+    let id: Int
+    let userTitle: String // different from JSON
+    let userBody: String // different from JSON
+
+    enum CodingKeys: String, CodingKey {
+        case userId
+        case id
+        case userTitle = "title"
+        case userBody = "body"
+    }
+}
+--------------------------------------
+// Codable = Encodable & Decodable
+struct User: Codable {
+    let userId: Int
+    let id: Int
+    let userTitle: String // different from JSON
+    let userBody: String // different from JSON
+
+    enum CodingKeys: String, CodingKey {
+        case userId
+        case id
+        case userTitle = "title"
+        case userBody = "body"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        userId = try container.decode(Int.self, forKey: .userId)
+        id = try container.decode(Int.self, forKey: .id)
+        userTitle = try container.decode(String.self, forKey: .userTitle)
+        userBody = try container.decode(String.self, forKey: .userBody)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encode(userId, forKey: .userId)
+        try container.encode(id, forKey: .id)
+        try container.encode(userTitle, forKey: .userTitle)
+        try container.encode(userBody, forKey: .userBody)
+    }
+}
+(см первый json)
+---------------------------------------
+struct User: Codable {
+    let userId: Int
+    let id: Int
+    let title: String
+    let body: String
+    let address: Address // Address here
+}
+
+struct Address: Codable {
+    let streetAddress: String
+    let city: String
+    let postalCode: Int
+    let isValid: Bool
+}
+-------------------------
+struct User: Codable {
+    let userId: Int
+    let id: Int
+    let title: String
+    let body: String
+
+    let streetAddress: String
+    let city: String
+    let postalCode: Int
+    let isValid: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case userId
+        case id
+        case title
+        case body
+
+        case address // Ключ вложенного JSON
+    }
+
+    enum AddressCodingKey: String, CodingKey {
+        case streetAddress
+        case city
+        case postalCode
+        case isValid
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        userId = try container.decode(Int.self, forKey: .userId)
+        id = try container.decode(Int.self, forKey: .id)
+        title = try container.decode(String.self, forKey: .title)
+        body = try container.decode(String.self, forKey: .body)
+
+        let addressContainer = try container.nestedContainer(keyedBy: AddressCodingKey.self, forKey: .address)
+        streetAddress = try addressContainer.decode(String.self, forKey: .streetAddress)
+        city = try addressContainer.decode(String.self, forKey: .city)
+        postalCode = try addressContainer.decode(Int.self, forKey: .postalCode)
+        isValid = try addressContainer.decode(Bool.self, forKey: .isValid)
+    }
+}
