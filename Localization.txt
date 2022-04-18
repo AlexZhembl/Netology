@@ -1,0 +1,100 @@
+
+    @IBAction func buttonDidTap(_ sender: Any) {
+        AVCaptureDevice.requestAccess(for: .video) { response in
+            if response {
+                print("Доступ получен")
+            } else {
+                print("Доступ запрещен")
+            }
+        }
+    }
+------------------------------------------------------------------------------
+@IBAction func buttonDidTap(_ sender: Any) {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .restricted, .denied:
+            showAlert(with: "Access denied", actionTitle: "Cancel")
+        case .authorized:
+            showAlert(with: "Access permitted", actionTitle: "Ok")
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { response in
+                if response {
+                    print("Доступ получен")
+                } else {
+                    print("Доступ запрещен")
+                }
+            }
+        @unknown default:
+            fatalError("Неопознанный статус")
+        }
+    }
+
+    private func showAlert(with title: String, actionTitle: String) {
+        let alertController = UIAlertController(title: title, message: nil, preferredStyle: .alert)
+        let action = UIAlertAction(title: actionTitle, style: .destructive)
+
+        alertController.addAction(action)
+        present(alertController, animated: true)
+    }
+------------------------------------------------------------------------------
+@IBAction func buttonDidTap(_ sender: Any) {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .restricted, .denied:
+            let title = NSLocalizedString("alert_denied", comment: "Тайтл алерта, если доступ был запрещен")
+            let actionTitle = NSLocalizedString("action_cancel", comment: "")
+            showAlert(with: title, actionTitle: actionTitle)
+        case .authorized:
+            let title = NSLocalizedString("alert_permitted", comment: "")
+            let actionTitle = NSLocalizedString("action_ok", comment: "")
+            showAlert(with: title, actionTitle: actionTitle)
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { response in
+                if response {
+                    print("Доступ получен")
+                } else {
+                    print("Доступ запрещен")
+                }
+            }
+        @unknown default:
+            fatalError("Неопознанный статус")
+        }
+    }
+
+"alert_denied" = "Access denied";
+"alert_permitted" = "Access permitted";
+"action_cancel" = "Cancel";
+"action_ok" = "Ok";
+------------------------------------------------------------------------------
+let date = Date()
+let formatter = DateFormatter()
+formatter.dateStyle = .full
+formatter.timeStyle = .full
+print("Не локализированная дата: \(formatter.string(from: date))")
+
+formatter.locale = Locale(identifier: "En")
+print("Дата в En локали: \(formatter.string(from: date))")
+------------------------------------------------------------------------------
+let meas = Measurement(value: 1000, unit: UnitLength.inches)
+let converted = meas.converted(to: .kilometers)
+print(converted)
+
+
+let myUnit = UnitTemperature(symbol: "popugay", converter: UnitConverterLinear(coefficient: 0.1))
+let measMyInit = Measurement(value: 50, unit: myUnit)
+let convertedMyUnit = measMyInit.converted(to: .kelvin)
+print(convertedMyUnit)
+------------------------------------------------------------------------------
+let numberOfChairs = 1
+        if numberOfChairs == 1 {
+            print("Зачем мне 1 табуретка?")
+        } else if numberOfChairs == 2 || numberOfChairs == 3 || numberOfChairs == 4 {
+            print("Зачем мне 2/3/4 табуретки?")
+        } else if numberOfChairs == 5 {
+            // ......
+        }
+        // .....
+
+let numberOfChairs = 0
+let string = NSLocalizedString("number_of_chairs", comment: "")
+let localized = String.localizedStringWithFormat(string, numberOfChairs)
+print(localized)
+------------------------------------------------------------------------------
