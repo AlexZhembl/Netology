@@ -1,0 +1,72 @@
+open ~/Library/Developer/CoreSimulator/Devices/1D0904CB-8915-45BE-9EBB-CA3027449187/data/Containers/Data/Application/5E99D67A-07E8-42B9-B267-2B91223B9960/Documents/
+---------------------------------------------------------------------------------------------------------
+let manager = FileManager.default
+let documentsUrl = manager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+
+print(documentsUrl)
+------------------------------------------------------------------------------------------------------------
+let fileManager = FileManager.default
+let documentUrl = fileManager.url(for: .documentDirectory,
+                                  in: [.userDomainMask],
+                                  appropriateFor: nil,
+                                  create: false)
+print(documentUrl)
+
+let imagePath = documentUrl.appendingPathComponent("my_image1.jpg")
+do {
+    let attributes = try fileManager.attributesOfItem(atPath: imagePath.path)
+    print(attributes)
+} catch let error {
+    print(error)
+}
+------------------------------------------------------------------------------------------------------------
+let fileManager = FileManager.default
+let documentUrl = fileManager.url(for: .documentDirectory,
+                                  in: [.userDomainMask],
+                                  appropriateFor: nil,
+                                  create: false)
+print(documentUrl)
+
+let someImage = UIImage(named: "bigImage_1") ?? UIImage()
+let data = someImage.jpegData(compressionQuality: 1.0)
+
+let imagePath = documentUrl.appendingPathComponent("my_image.jpg")
+do {
+    try fileManager.createFile(atPath: imagePath.path, contents: data)
+}
+catch let error {
+    print(error)
+}
+------------------------------------------------------------------------------------------------------------
+let fileManager = FileManager.default
+let documentUrl = fileManager.url(for: .documentDirectory,
+                                  in: [.userDomainMask],
+                                  appropriateFor: nil,
+                                  create: false)
+print(documentUrl)
+
+let imagePath = documentUrl.appendingPathComponent("my_image.jpg")
+do {
+    try fileManager.removeItem(at: imagePath)
+}
+catch let error {
+    print(error)
+}
+------------------------------------------------------------------------------------------------------------
+let fileManager = FileManager.default
+let documentUrl = fileManager.url(for: .documentDirectory,
+                                  in: [.userDomainMask],
+                                  appropriateFor: nil,
+                                  create: false)
+print(documentUrl)
+
+do {
+    let contents = try fileManager.contentsOfDirectory(at: documentUrl, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles])
+
+    for file in contents {
+        let filePath = file.path
+        print("File path: \(filePath)")
+    }
+} catch let error {
+    print(error)
+}
