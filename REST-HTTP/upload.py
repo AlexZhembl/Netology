@@ -10,7 +10,7 @@ def lol():
 @app.route('/uploader', methods = ['GET', 'POST'])
 def upload_file():
    if request.method == 'POST':
-      return str(request.values)
+      return str(request.form)
       #f = request.files['data']
       #f.save(f.filename)
       #return 'file uploaded successfully'

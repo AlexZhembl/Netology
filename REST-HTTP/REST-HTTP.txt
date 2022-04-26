@@ -1,14 +1,25 @@
-// https://jsonplaceholder.typicode.com/comments?postId=1&limit=5
+// http://jsonplaceholder.typicode.com:8080/comments?postId=1&limit=5
+// Old style
+// if let url = URL(string: "http://jsonplaceholder.typicode.com:8080/comments?postId=1&limit=5") {
+//    .....
+// }
 //
+
 var urlComponents = URLComponents()
-urlComponents.scheme = "https"
+urlComponents.scheme = "http"
 urlComponents.host = "jsonplaceholder.typicode.com"
 urlComponents.path = "/comments"
-urlComponents.query = "postId=1&limit=5"
+
+//urlComponents.query = "postId=1&limit=5"
+urlComponents.queryItems = [URLQueryItem(name: "postId", value: "1"),
+                            URLQueryItem(name: "limit", value: "5")]
+//urlComponents.port = 8080
 
 if let url = urlComponents.url {
     URLSession.shared.dataTask(with: url) { data, response, error in
 
+        print(error ?? "no error")
+        print(response)
         if let unwrappedData = data,
            let serialized = try? JSONSerialization.jsonObject(with: unwrappedData, options: []) {
             print(serialized)
@@ -19,13 +30,39 @@ if let url = urlComponents.url {
 //    URLSession.shared.dataTask(with: urlRequest) {data, response, error in }.resume()
 }
 ------------------------------------------------------------------
-// https://jsonplaceholder.typicode.com/comments?postId=1&limit=5
-//
-var urlComponents = URLComponents()
-urlComponents.scheme = "https"
-urlComponents.host = "jsonplaceholder.typicode.com"
-urlComponents.path = "/posts"
+/*
 
+curl -v google.com
+
+
+*   Trying 2a00:1450:4001:813::200e:80...
+* Connected to google.com (2a00:1450:4001:813::200e) port 80 (#0)
+> GET / HTTP/1.1
+> Host: google.com
+> User-Agent: curl/7.77.0
+> Accept: */*
+>
+* Mark bundle as not supporting multiuse
+< HTTP/1.1 301 Moved Permanently
+< Location: http://www.google.com/
+< Content-Type: text/html; charset=UTF-8
+< Date: Tue, 19 Apr 2022 14:51:15 GMT
+< Expires: Thu, 19 May 2022 14:51:15 GMT
+< Cache-Control: public, max-age=2592000
+< Server: gws
+< Content-Length: 219
+< X-XSS-Protection: 0
+< X-Frame-Options: SAMEORIGIN
+<
+<HTML><HEAD><meta http-equiv="content-type" content="text/html;charset=utf-8">
+<TITLE>301 Moved</TITLE></HEAD><BODY>
+<H1>301 Moved</H1>
+The document has moved
+<A HREF="http://www.google.com/">here</A>.
+</BODY></HTML>
+
+*/
+------------------------------------------------------------------
 struct Post: Codable {
     let userId: String
     let id: String
@@ -35,8 +72,11 @@ struct Post: Codable {
 let newPost = Post(userId: "123", id: "321", title: "New post title", body: "New post body")
 
 if let url = urlComponents.url {
+
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
+    request.addValue("any value", forHTTPHeaderField: "MyHeaderName")
+    request.addValue("User-Agent", forHTTPHeaderField: "windows-xp")
 
     if let data = try? JSONEncoder().encode(newPost) {
         request.httpBody = data
@@ -71,6 +111,16 @@ if let url = urlComponents.url {
     }.resume()
 }
 ----------------------------------------------
+FirebaseApp.configure()
+       Auth.auth().createUser(withEmail: "testMailNetology@gmail.com", password: "41Netologyew123User") { authResult, error in
+         print(error ?? "")
+       }
+
+//        Auth.auth().signIn(withEmail: email, password: password) { [weak self] authResult, error in
+//          guard let strongSelf = self else { return }
+//
+//        }
+----------------------------------------------
 
 var urlComponents = URLComponents()
 urlComponents.scheme = "https"
@@ -90,8 +140,8 @@ if let url = urlComponents.url {
 -----------------------------------------------
 var urlComponents = URLComponents()
 urlComponents.scheme = "https"
-urlComponents.host = "jsonplaceholder.typicode.com"
-urlComponents.path = "/posts"
+urlComponents.host = "images.red.com"
+urlComponents.path = "/sample-r3d-files/v-raptor-mantis-1.jpg"
 
 class SessionDelegate: NSObject, URLSessionDownloadDelegate {
     static let shared = SessionDelegate()
@@ -101,6 +151,7 @@ class SessionDelegate: NSObject, URLSessionDownloadDelegate {
     }
 
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+
         let progress = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
         print(progress)
     }
@@ -138,7 +189,7 @@ struct MyUser: Encodable {
         }
     }
 }
-let myUser = MyUser(userName: "Test user", image: UIImage(named: "apple_tv") ?? UIImage())
+let myUser = MyUser(userName: "Test user", image: UIImage(named: "bigImage_1") ?? UIImage())
 
 if let url = urlComponents.url {
     var request = URLRequest(url: url)
