@@ -41,6 +41,7 @@ NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotificati
     print("User default changed")
 }
 
+print("Will add value")
 let defaults = UserDefaults.standard
 defaults.setValue(123, forKey: "myNumber") // сохраняем на диск
 print("Value added")
@@ -230,20 +231,14 @@ override func viewDidLoad() {
         print("Новый пароль добавлен успешно")
     }
     --------------------------------------------------------------
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        view.backgroundColor = .green
-        callOnDemandResources()
-    }
-
     func callOnDemandResources() {
-        let request = NSBundleResourceRequest(tags: ["BigImages"])
+        let request = NSBundleResourceRequest(tags: ["image_pack_at_start"])
+
         request.conditionallyBeginAccessingResources { [weak self] allResourcesAvailable in
             if allResourcesAvailable {
                 print("Ресурсы доступны")
                 DispatchQueue.main.async {
-                    self?.setupImageView()
+                    self?.setupImageView(in: request.bundle)
                 }
 
             }
@@ -256,14 +251,9 @@ override func viewDidLoad() {
                     }
 
                     DispatchQueue.main.async {
-                        self?.setupImageView()
+                        self?.setupImageView(in: request.bundle)
                     }
                 }
             }
         }
-    }
-
-    func setupImageView() {
-        let image = UIImage(named: "bigImage_1")
-        imageView.image = image
     }
