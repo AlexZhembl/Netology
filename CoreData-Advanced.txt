@@ -1,0 +1,298 @@
+...prev lesson code examples start...
+
+DataBaseManager.shared.increaseNumberOfLaunches()
+let numberOfLaunches = DataBaseManager.shared.getLaunchesNumber()
+self?.label.text = "number of launches: \(numberOfLaunches)"
+------------------------------------------------------------------------------------------------
+com.apple.CoreData.ConcurrencyDebug 1
+
+DispatchQueue.global(qos: .userInitiated).async {
+            DataBaseManager.shared.increaseNumberOfLaunches()
+            let numberOfLaunches = DataBaseManager.shared.getLaunchesNumber()
+
+            DispatchQueue.main.async { [weak self] in
+                self?.label.text = "number of launches: \(numberOfLaunches)"
+            }
+        }
+------------------------------------------------------------------------------------------------
+
+ private lazy var backgroundContext = persistentContainer.newBackgroundContext()
+ func increaseNumberOfLaunches() {
+        let fetchRequest = LaunchStatus.fetchRequest()
+        do {
+            let settings = try backgroundContext.fetch(fetchRequest)
+
+            if let set = settings.first {
+                set.numberOfLaunches += 1
+                set.lastLaunchDate = Date()
+            }
+            else {
+                let sewSett = LaunchStatus(context: backgroundContext)
+                sewSett.numberOfLaunches = 1
+                sewSett.lastLaunchDate = Date()
+            }
+
+            try backgroundContext.save()
+
+        } catch let error {
+            print(error)
+        }
+    }
+------------------------------------------------------------------------------------------------
+func increaseNumberOfLaunches() {
+        backgroundContext.perform { [weak self] in
+            guard let self = self else {
+                return
+            }
+
+            let fetchRequest = LaunchStatus.fetchRequest()
+            do {
+                let settings = try self.backgroundContext.fetch(fetchRequest)
+
+                if let set = settings.first {
+                    set.numberOfLaunches += 1
+                    set.lastLaunchDate = Date()
+                }
+                else {
+                    let sewSett = LaunchStatus(context: self.backgroundContext)
+                    sewSett.numberOfLaunches = 1
+                    sewSett.lastLaunchDate = Date()
+                }
+
+                try self.backgroundContext.save()
+
+            } catch let error {
+                print(error)
+            }
+        }
+    }
+
+    func getLaunchesNumber() -> Int {
+        backgroundContext.perform { [weak self] in
+            guard let self = self else {
+                return
+            }
+
+            let fetchRequest = LaunchStatus.fetchRequest()
+            do {
+                let settings = try self.backgroundContext.fetch(fetchRequest)
+                if let set = settings.first {
+                    return Int(truncatingIfNeeded: set.numberOfLaunches)
+                }
+                else {
+                    return 0
+                }
+            } catch let error {
+                print(error)
+            }
+            return 0
+        }
+    }
+------------------------------------------------------------------------------------------------
+func getLaunchesNumber(completion: @escaping (Int) -> Void) {
+func increaseNumberOfLaunches(completion: @escaping () -> Void) {
+
+DataBaseManager.shared.increaseNumberOfLaunches {
+            DataBaseManager.shared.getLaunchesNumber { numberOfLaunches in
+                DispatchQueue.main.async { [weak self] in
+                    self?.label.text = "number of launches: \(numberOfLaunches)"
+                }
+            }
+        }
+------------------------------------------------------------------------------------------------
+
+func getLaunchStatus() -> LaunchStatus? {
+       let fetchRequest = LaunchStatus.fetchRequest()
+       do {
+           let settings = try persistentContainer.viewContext.fetch(fetchRequest)
+           return settings.first
+       } catch let error {
+           print(error)
+       }
+       return nil
+   }
+
+   if let status = DataBaseManager.shared.getLaunchStatus() {
+           label.text = "number of launches: \(Int(truncatingIfNeeded: status.numberOfLaunches))"
+       }
+
+------------------------------------------------------------------------------------------------
+
+func setZeroNumberOfLaunches(toObjectWith id: NSManagedObjectID) {
+        backgroundContext.perform { [weak self] in
+            guard let self = self else {
+                return
+            }
+
+            let obj = self.backgroundContext.object(with: id)
+            if let obj = obj as? LaunchStatus {
+                obj.numberOfLaunches = 0
+            }
+            try? self.backgroundContext.save()
+        }
+    }
+
+    if let status = DataBaseManager.shared.getLaunchStatus() {
+            label.text = "number of launches: \(Int(truncatingIfNeeded: status.numberOfLaunches))"
+
+            status.numberOfLaunches = 123
+            try? status.managedObjectContext?.save()
+
+            DataBaseManager.shared.setZeroNumberOfLaunches(toObjectWith: status.objectID)
+        }
+------------------------------------------------------------------------------------------------
+func createNewUser() {
+        backgroundContext.perform { [weak self] in
+            guard let self = self else {
+                return
+            }
+
+
+            do {
+                /* removing old examples */
+                let fetchDeleteRequest = AppUser.fetchRequest()
+                let usersToDelete = try self.backgroundContext.fetch(fetchDeleteRequest)
+                usersToDelete.forEach {
+                    print($0) // isAvailable will not save to store
+                    self.backgroundContext.delete($0)
+                }
+                /* ----- */
+
+
+
+
+                let user = AppUser(context: self.backgroundContext)
+                user.name = "Vasya" // "V"
+
+                user.salary = 123123.123343423 //
+
+                user.isAvailable = true // true will not save to store
+
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+                user.loginTime = dateFormatter.string(from: Date())
+
+                try self.backgroundContext.save()
+
+                let fetchRequest = AppUser.fetchRequest()
+                let users = try self.backgroundContext.fetch(fetchRequest)
+                if let first = users.first {
+                    print(first)
+                }
+
+            } catch let error {
+                print(error)
+            }
+        }
+    }
+
+     DataBaseManager.shared.createNewUser()
+
+------------------------------------------------------------------------------------------------
+
+func createStudents() {
+        backgroundContext.perform { [weak self] in
+            guard let self = self else {
+                return
+            }
+
+            do {
+                let student = Student(context: self.backgroundContext)
+                student.name = "Vasya"
+
+                let book1 = Book(context: self.backgroundContext)
+                book1.subject = "Math"
+                student.books = book1
+
+//                let book2 = Book(context: self.backgroundContext)
+//                book2.subject = "RU lang"
+//
+//                let book3 = Book(context: self.backgroundContext)
+//                book3.subject = "ENG lang"
+//
+//                student.books = Set([book1, book2, book3])
+
+                try self.backgroundContext.save()
+
+                let fetchRequest = Student.fetchRequest()
+                let users = try self.backgroundContext.fetch(fetchRequest)
+                if let first = users.first {
+                    print(first.books?.subject)
+                }
+
+            } catch let error {
+                print(error)
+            }
+        }
+    }
+-----------------------------------------------------------------------------------------------
+func createBooks() {
+        backgroundContext.perform { [weak self] in
+            guard let self = self else {
+                return
+            }
+
+            do {
+                for _ in 1...100 {
+                    let book = Book(context:  self.backgroundContext)
+                    book.subject = ""
+                    book.number = Int32.random(in: 1..<10000)
+                }
+                try self.backgroundContext.save()
+
+                let fetchRequest = Book.fetchRequest()
+
+                fetchRequest.sortDescriptors = [NSSortDescriptor(key: "number", ascending: true)]
+                fetchRequest.fetchLimit = 10
+                fetchRequest.fetchOffset = 3
+
+                let books = try self.backgroundContext.fetch(fetchRequest)
+                books.forEach { b in
+                    print(b.number)
+                }
+
+            } catch let error {
+                print(error)
+            }
+        }
+    }
+
+     DataBaseManager.shared.createBooks()
+  -----------------------------------------------------------------------------------------------
+  func createBooks() {
+          backgroundContext.perform { [weak self] in
+              guard let self = self else {
+                  return
+              }
+
+              do {
+                  for _ in 1...100 {
+                      let book = Book(context:  self.backgroundContext)
+
+                      let rand = Int32.random(in: 1..<10000)
+                      book.subject = "\(rand)"
+                      book.number = rand
+                  }
+                  try self.backgroundContext.save()
+
+                  let fetchRequest = Book.fetchRequest()
+
+                  fetchRequest.sortDescriptors = [NSSortDescriptor(key: "number", ascending: true)]
+                //  fetchRequest.fetchLimit = 10
+
+  //                fetchRequest.predicate = NSPredicate(format: "number > 100 && number <1000")
+
+                  let myNumber = "99" // Entered from textfield
+      //            fetchRequest.predicate = NSPredicate(format: "subject == %@", myNumber)
+                  fetchRequest.predicate = NSPredicate(format: "subject CONTAINS %@", myNumber)
+
+                  let books = try self.backgroundContext.fetch(fetchRequest)
+                  books.forEach { b in
+                      print(b.number)
+                  }
+
+              } catch let error {
+                  print(error)
+              }
+          }
+      }
