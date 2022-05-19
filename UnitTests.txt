@@ -1,0 +1,273 @@
+@IBAction func actionShare(_ sender: Any) {
+        guard let song = song,
+              let songUrl = URL(string: "songsappscheme://opensong?id=\(song.id)") else {
+            return
+        }
+
+        let attachments: [Any] = ["Check the song … \(songUrl)"]
+        let activityViewController = UIActivityViewController(activityItems: attachments, applicationActivities: nil)
+        activityViewController.excludedActivityTypes = [.airDrop]
+        activityViewController.completionWithItemsHandler = { [weak self] _, success, _, error in
+            guard let self = self else {
+                return
+            }
+
+            if success {
+                self.displaySuccessAlert()
+            } else {
+                if error != nil {
+                    self.displayErrorAlert()
+                } else {
+                    // action cancelled
+                }
+            }
+        }
+        present(activityViewController, animated: true, completion: nil)
+    }
+  ------------------------------------------------------------------------------------------------
+class ShareHelper {
+    var detailsViewController: SongDetailsViewController?
+    var song: Song?
+
+    func shareSong() {
+        guard let song = song,
+              let songUrl = URL(string: "songsappscheme://opensong?id=\(song.id)") else {
+            return
+        }
+
+        let attachments: [Any] = ["Check the song … \(songUrl)"]
+        let activityViewController = UIActivityViewController(activityItems: attachments, applicationActivities: nil)
+        activityViewController.excludedActivityTypes = [.airDrop]
+        activityViewController.completionWithItemsHandler = { [weak self] _, success, _, error in
+            guard let self = self else {
+                return
+            }
+
+            if success {
+                self.detailsViewController?.displaySuccessAlert()
+            } else {
+                if error != nil {
+                    self.detailsViewController?.displayErrorAlert()
+                } else {
+                    // action cancelled
+                }
+            }
+        }
+        detailsViewController?.present(activityViewController, animated: true)
+    }
+}
+-------------------------------------------------------------------------------------
+@IBAction func actionShare(_ sender: Any) {
+        shareHelper = ShareHelper()
+        shareHelper?.detailsViewController = self
+        shareHelper?.song = song
+
+        shareHelper?.shareSong()
+    }
+-------------------------------------------------------------------------------------
+class ShareHelperTests: XCTestCase {
+    var shareHelper: ShareHelper!
+    var detailsViewController: SongDetailsViewController!
+
+    override func setUp() {
+        super.setUp()
+
+        // Будем пересоздавать наши классы перед каждым тест-кейсом
+        detailsViewController = SongDetailsViewController()
+        shareHelper = ShareHelper(detailsViewController: detailsViewController)
+    }
+
+    func testShare_verifyUrl_verifySuccessAlert() {
+        let dummySong = Song(id: 1, artist: "artist", title: "title", artwork: nil)
+        shareHelper.share(dummySong)
+        // ???
+    }
+}
+-------------------------------------------------------------------------------------
+protocol SharePresenter {
+    func showShareScreen(content: String, completion: @escaping (Bool) -> ())
+    func displaySuccessAlert()
+    func displayErrorAlert()
+}
+
+class ShareHelper {
+    var sharePresenter: SharePresenter?
+
+    func shareSong(_ song: Song?) {
+        guard let song = song,
+              let songUrl = URL(string: "songsappscheme://opensong?id=\(song.id)") else {
+            return
+        }
+
+        let content = "Check the song … \(songUrl)"
+        sharePresenter?.showShareScreen(content: content) { success in
+            if success {
+                self.sharePresenter?.displaySuccessAlert()
+            } else {
+                self.sharePresenter?.displayErrorAlert()
+            }
+        }
+    }
+}
+-------------------------------------------------------------------------------------
+extension SongDetailsViewController: SharePresenter {
+    func showShareScreen(content: String, completion: @escaping (Bool) -> ()) {
+        let attachments: [Any] = [content]
+        let activityViewController = UIActivityViewController(activityItems: attachments, applicationActivities: nil)
+        activityViewController.excludedActivityTypes = [.airDrop]
+        activityViewController.completionWithItemsHandler = { _, success, _, _ in
+            completion(success)
+        }
+        present(activityViewController, animated: true)
+    }
+
+    func displaySuccessAlert() {
+        let alert = UIAlertController(title: "Shared!", message: nil, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "ok", style: .default))
+        present(alert, animated: true)
+    }
+
+    func displayErrorAlert() {
+        let alert = UIAlertController(title: "Error!", message: nil, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "ok", style: .default))
+        present(alert, animated: true)
+    }
+}
+
+@IBAction func actionShare(_ sender: Any) {
+       shareHelper = ShareHelper()
+       shareHelper?.sharePresenter = self
+
+       shareHelper?.shareSong(song)
+   }
+
+------------------------------------------------------------------------
+class ShareHelperTests: XCTestCase {
+    var shareHelper: ShareHelper!
+    var sharePresenterMock: SharePresenterMock!
+
+    override func setUp() {
+        super.setUp()
+
+        // Будем пересоздавать наши классы перед каждым тест-кейсом
+        shareHelper = ShareHelper()
+        sharePresenterMock = SharePresenterMock()
+        shareHelper.sharePresenter = sharePresenterMock
+    }
+
+    func testShare_verifyUrl_verifySuccessAlert() {
+        let dummySong = Song(id: 1, artist: "artist", title: "title", artwork: "")
+        shareHelper.shareSong(dummySong)
+
+        XCTAssertTrue(sharePresenterMock.showShareScreenCalled)
+        XCTAssertEqual(sharePresenterMock.presentedContent, "Check the song … songsappscheme://opensong?id=1")
+    }
+}
+
+class SharePresenterMock: SharePresenter {
+
+    var showShareScreenCalled = false
+    var presentedContent: String?
+
+    func showShareScreen(content: String, completion: @escaping (Bool) -> Void) {
+        showShareScreenCalled = true
+        presentedContent = content
+    }
+
+    func displaySuccessAlert() {
+        // ...
+    }
+
+    func displayErrorAlert() {
+        // ...
+    }
+}
+----------------------------------------------------------------------------------------
+func testShare_verifyUrl_verifySuccessAlert() {
+        let dummySong = Song(id: 1, artist: "artist", title: "title", artwork: "")
+        sharePresenterMock.shouldCompleteWithSuccess = true // НАСТРАИВАЕМ SharePresenterMock для нашего тест кейса
+        shareHelper.shareSong(dummySong)
+
+        XCTAssertTrue(sharePresenterMock.showShareScreenCalled)
+        XCTAssertEqual(sharePresenterMock.presentedContent, "Check the song … songsappscheme://opensong?id=1")
+
+        XCTAssertTrue(sharePresenterMock.displaySuccessAlertCalled)
+    }
+
+    class SharePresenterMock: SharePresenter {
+
+    var showShareScreenCalled = false
+    var presentedContent: String?
+
+    var shouldCompleteWithSuccess = true // Говорим нашему SharePresenterMock, что вернуть в комплишене
+
+    var displaySuccessAlertCalled = false
+    var displayErrorAlertCalled = false
+
+    func showShareScreen(content: String, completion: @escaping (Bool) -> Void) {
+        showShareScreenCalled = true
+        presentedContent = content
+        completion(shouldCompleteWithSuccess ? true : false)
+    }
+
+    func displaySuccessAlert() {
+        displaySuccessAlertCalled = true
+    }
+
+    func displayErrorAlert() {
+        displayErrorAlertCalled = true
+    }
+}
+----------------------------------------------------------------------------------------
+func shareSong(_ song: Song?, completion: @escaping (Bool) -> Void) {
+        guard let song = song,
+              let songUrl = URL(string: "songsappscheme://opensong?id=\(song.id)") else {
+            return
+        }
+
+        let content = "Check the song … \(songUrl)"
+        sharePresenter?.showShareScreen(content: content) { success in
+            if success {
+                self.sharePresenter?.displaySuccessAlert()
+            } else {
+                self.sharePresenter?.displayErrorAlert()
+            }
+
+            DispatchQueue.global(qos: .background).async {
+                completion(success)
+            }
+        }
+    }
+
+    @IBAction func actionShare(_ sender: Any) {
+        shareHelper = ShareHelper()
+        shareHelper?.sharePresenter = self
+
+        shareHelper?.shareSong(song) { success in
+            print("Share done with \(success)")
+        }
+    }
+
+    shareHelper.shareSong(dummySong) { success in
+           XCTAssertTrue(success) // XCTAssertFalse(success)
+       }
+
+       func testShare_verifyUrl_verifySuccessAlert() {
+        let dummySong = Song(id: 1, artist: "artist", title: "title", artwork: "")
+        sharePresenterMock.shouldCompleteWithSuccess = true // НАСТРАИВАЕМ SharePresenterMock для нашего тест кейса
+
+        let expectation = expectation(description: "completion should be called")
+        shareHelper.shareSong(dummySong) { success in
+            XCTAssertTrue(success) // XCTAssertFalse(success)
+
+            expectation.fulfill()
+        }
+
+        XCTAssertTrue(sharePresenterMock.showShareScreenCalled)
+        XCTAssertEqual(sharePresenterMock.presentedContent, "Check the song … songsappscheme://opensong?id=1")
+
+        XCTAssertTrue(sharePresenterMock.displaySuccessAlertCalled)
+
+        wait(for: [expectation], timeout: 1.0)
+    }
+----------------------------------------------------------------------------------------
