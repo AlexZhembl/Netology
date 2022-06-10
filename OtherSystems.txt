@@ -1,0 +1,184 @@
+@IBOutlet weak var hair: UILabel!
+    @IBOutlet weak var monkey: UILabel!
+    @IBOutlet weak var chicken: UILabel!
+
+    private var regularWidthConstraints: [NSLayoutConstraint] = []
+    private var compactWidthConstraints: [NSLayoutConstraint] = []
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        view.backgroundColor = .green
+        configureConstraintsArrays()
+
+        NSLayoutConstraint.activate(regularWidthConstraints)
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        switch (traitCollection.horizontalSizeClass, traitCollection.verticalSizeClass) {
+        case (.regular, .regular):
+            NSLayoutConstraint.deactivate(compactWidthConstraints)
+            NSLayoutConstraint.activate(regularWidthConstraints)
+        case (.compact, .regular):
+            NSLayoutConstraint.deactivate(regularWidthConstraints)
+            NSLayoutConstraint.activate(compactWidthConstraints)
+        default:
+            print("Необработанный size class")
+            break
+        }
+    }
+
+    func configureConstraintsArrays() {
+        regularWidthConstraints = [
+            hair.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            hair.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+
+            monkey.leftAnchor.constraint(equalTo: hair.rightAnchor, constant: 100),
+            monkey.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+
+            chicken.rightAnchor.constraint(equalTo: hair.leftAnchor, constant: -100),
+            chicken.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ]
+
+        compactWidthConstraints = [
+            hair.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            hair.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+
+            monkey.bottomAnchor.constraint(equalTo: hair.topAnchor, constant: -100),
+            monkey.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+
+            chicken.topAnchor.constraint(equalTo: hair.bottomAnchor, constant: 100),
+            chicken.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+        ]
+    }
+
+--------------------------------------------------------------------------
+
+extension TableViewController: UITableViewDragDelegate {
+    func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+
+        let itemProvider = NSItemProvider()
+        let data = animals[indexPath.row]
+
+        // Для передачи между приложениями
+//        itemProvider.registerDataRepresentation(forTypeIdentifier: kUTTypePlainText as String, visibility: .all) { completion in
+//                completion(data, nil)
+//                return nil
+//            }
+
+        let dragItem = UIDragItem(itemProvider: itemProvider)
+        // Для передачи внутри приложениями
+        dragItem.localObject = data
+        return [dragItem]
+    }
+}
+-------------------------
+
+extension TableViewController: UITableViewDragDelegate {
+    func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+
+        let animal = animals[indexPath.row]
+        let data = animal.data(using: .utf8)
+
+        let itemProvider = NSItemProvider()
+        itemProvider.registerDataRepresentation(forTypeIdentifier: UTType.text.identifier, visibility: .all) { completion in
+
+
+            completion(data, nil)
+            return nil
+        }
+
+        let dragItem = UIDragItem(itemProvider: itemProvider)
+        dragItem.localObject = data
+        return [dragItem]
+    }
+}
+
+extension TableViewController: UITableViewDropDelegate {
+    func tableView(_ tableView: UITableView, canHandle session: UIDropSession) -> Bool {
+        return session.hasItemsConforming(toTypeIdentifiers: [UTType.text.identifier])
+    }
+
+    func tableView(_ tableView: UITableView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal {
+        var dropProposal = UITableViewDropProposal(operation: .cancel)
+
+        // Принимаю только 1 драг айтем
+        guard session.items.count == 1 else { return dropProposal }
+
+        // Проверяем, находимся ли мы в нашем приложении внутри нашей таблицы
+        if tableView.hasActiveDrag {
+            dropProposal = UITableViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
+
+        } else {
+            // Выполнится, если вне приложения
+            dropProposal = UITableViewDropProposal(operation: .copy, intent: .insertAtDestinationIndexPath)
+        }
+
+        return dropProposal
+    }
+
+    func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
+        let destinationIndexPath: IndexPath
+
+        if let indexPath = coordinator.destinationIndexPath {
+            destinationIndexPath = indexPath
+        } else {
+            // Получаем последний IndexPath
+            let section = tableView.numberOfSections - 1
+            let row = tableView.numberOfRows(inSection: section)
+            destinationIndexPath = IndexPath(row: row, section: section)
+        }
+
+        guard let itemData = coordinator.session.items.first?.localObject as? Data,
+              let item = String(data: itemData, encoding: .utf8) else {
+            print("не найден айтем")
+            return
+        }
+
+        animals = animals.filter { $0 != item }
+
+        animals.insert(item, at: destinationIndexPath.row)
+        tableView.reloadData()
+
+//        coordinator.session.loadObjects(ofClass: NSString.self) { [weak self] items in
+//            guard let self = self else {
+//                return
+//            }
+//
+//            guard let stringItems = items as? [String],
+//                    let item = stringItems.first else {
+//                print("Обрабатываем только 1 айтем")
+//                return
+//            }
+//
+//            self.animals = self.animals.filter { $0 != item }
+//
+//            self.animals.insert(item, at: destinationIndexPath.row)
+//            self.tableView.reloadData()
+//        }
+    }
+}
+------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+func getCurrentTimelineEntry(for complication: CLKComplication, withHandler handler: @escaping (CLKComplicationTimelineEntry?) -> Void) {
+        let template = CLKComplicationTemplateCircularSmallSimpleImage(imageProvider: CLKImageProvider(onePieceImage: UIImage(named: "Complication/Circular")!))
+        let entry = CLKComplicationTimelineEntry(date: Date(), complicationTemplate: template)
+        handler(entry)
+    }
+
+    func getComplicationDescriptors(handler: @escaping ([CLKComplicationDescriptor]) -> Void) {
+        let descriptors = [
+            CLKComplicationDescriptor(identifier: "complication", displayName: "Netology", supportedFamilies: [CLKComplicationFamily.circularSmall])
+        ]
+        handler(descriptors)
+    }
+
+    func getLocalizableSampleTemplate(for complication: CLKComplication, withHandler handler: @escaping (CLKComplicationTemplate?) -> Void) {
+        let template = CLKComplicationTemplateCircularSmallSimpleImage(imageProvider: CLKImageProvider(onePieceImage: UIImage(named: "Complication/Circular")!))
+        handler(template)
+    }
