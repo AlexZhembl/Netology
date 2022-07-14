@@ -1,0 +1,80 @@
+//
+//  File.swift
+//  Netology
+//
+//  Created by Aliaksei Zhemblouski on 17.04.2022.
+//
+
+import Foundation
+import UIKit
+import LocalAuthentication
+
+class CameraViewController: UIViewController {
+
+    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var label: UILabel!
+    @IBOutlet weak var button: UIButton!
+
+    var context = LAContext()
+    let policy: LAPolicy = .deviceOwnerAuthenticationWithBiometrics
+    var canUserBiometrics = false
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        var error: NSError?
+        canUserBiometrics = context.canEvaluatePolicy(policy, error: &error)
+
+        if let error = error {
+            print(error)
+
+            label.text = "Невозможно использовать аутентификацию"
+        }
+    }
+
+    @IBAction func buttonDidTap(_ button: UIButton) {
+        guard canUserBiometrics else {
+            return
+        }
+
+        context.localizedCancelTitle = "Использовать авторизацию через email/пароль"
+
+        context.evaluatePolicy(
+            policy,
+            localizedReason: "Авторизируйтесь для входа"
+        ) { [weak self] success, error in
+
+            // Обрабатываем результат
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else {
+                    return
+                }
+
+                if let error = error {
+                    print(error)
+                    self.label.text = error.localizedDescription
+                    self.displayErrorAlert(error.localizedDescription)
+                    return
+                }
+
+                if success {
+                    self.displaySuccessAlert() // Открываем экран с секретными данными
+                } else {
+                    self.displayErrorAlert("Что-то пошло не так")
+                }
+            }
+        }
+    }
+
+    func displaySuccessAlert() {
+        let alert = UIAlertController(title: "Серкты открыты!", message: nil, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "ok", style: .default))
+        present(alert, animated: true)
+    }
+
+    func displayErrorAlert(_ string: String) {
+        let alert = UIAlertController(title: "Ошибка!", message: string, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "ok", style: .default))
+        present(alert, animated: true)
+    }
+}
