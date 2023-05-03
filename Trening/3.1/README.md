@@ -13,6 +13,9 @@
 ### Эталонное решение эксперта
 [/ExpectedCode/task1.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/3.1/ExpectedCode/task1.swift)
 
+### Тесты
+[/ExpectedCode/task1.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/3.1/Tests/task1.swift)
+
 ### Примеры
 | boys | girls    | массив girls после выполнения функции    |
 | :---:   | :---: |  :---: |
@@ -33,6 +36,9 @@
 ### Эталонное решение эксперта
 [/ExpectedCode/task2.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/3.1/ExpectedCode/task2.swift)
 
+### Тесты
+[/ExpectedCode/task2.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/3.1/Tests/task2.swift)
+
 ### Примеры
 | boys | girls    | массив girls после выполнения функции    |
 | :---:   | :---: |  :---: |
@@ -52,7 +58,10 @@
 [/InitialCode/task3.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/3.1/InitialCode/task3.swift)
 
 ### Эталонное решение эксперта
-[/ExpectedCode/task1.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/3.1/ExpectedCode/task3.swift)
+[/ExpectedCode/task3.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/3.1/ExpectedCode/task3.swift)
+
+### Тесты
+[/ExpectedCode/task3.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/3.1/Tests/task3.swift)
 
 ### Примеры
 | marks | результат    |
@@ -70,7 +79,10 @@
 [/InitialCode/task3.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/3.1/InitialCode/task3.swift)
 
 ### Эталонное решение эксперта
-[/ExpectedCode/task3.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/3.1/ExpectedCode/task3.swift)
+[/ExpectedCode/task4.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/3.1/ExpectedCode/task4.swift)
+
+### Тесты
+[/ExpectedCode/task4.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/3.1/Tests/task4.swift)
 
 ### Примеры
 | array | результат    |
