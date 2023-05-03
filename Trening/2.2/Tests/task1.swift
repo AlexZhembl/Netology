@@ -1,5 +1,5 @@
 import XCTest
-@testable import Netology
+@testable import App
 
 class Task1Tests: XCTestCase {
     func testSolution() {
