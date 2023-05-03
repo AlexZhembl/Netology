@@ -25,6 +25,9 @@
 ### Эталонное решение эксперта
 [/ExpectedCode/task1.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/2.2/ExpectedCode/task1.swift)
 
+### Тесты
+[/Tests/task1.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/2.2/Tests/task1.swift)
+
 ### Примеры
 | month | результат    |
 | :---:   | :---: |
@@ -47,6 +50,9 @@
 
 ### Эталонное решение эксперта
 [/ExpectedCode/task2.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/2.2/ExpectedCode/task2.swift)
+
+### Тесты
+[/Tests/task22.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/2.2/Tests/task2.swift)
 
 ### Примеры
 | month | результат    |
@@ -71,6 +77,9 @@
 
 ### Эталонное решение эксперта
 [/ExpectedCode/task3.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/2.2/ExpectedCode/task3.swift)
+
+### Тесты
+[/Tests/task3.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/2.2/Tests/task3.swift)
 
 ### Примеры
 | month | результат    |
@@ -103,3 +112,6 @@ https://metanit.com/swift/tutorial/3.8.php
 
 ### Эталонное решение эксперта
 [/ExpectedCode/task4.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/2.2/ExpectedCode/task4.swift)
+
+### Тесты
+[/Tests/task4.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/2.2/Tests/task4.swift)
