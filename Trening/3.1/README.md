@@ -8,10 +8,13 @@
 Порядок добавления не важен, главное что бы все элементы `boys` находилсь в начале `girls`.
 
 ### Начальный код задания
-[/initial_code/task1.py](https://github.com/netology-code/pd-simulator/blob/main/py/6.1/initial_code/task1.py)
+[/InitialCode/task1.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/3.1/InitialCode/task1.swift)
 
 ### Эталонное решение эксперта
-[/expected_code/task1.py](https://github.com/netology-code/pd-simulator/blob/main/py/6.1/expected_code/task1.py)
+[/ExpectedCode/task1.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/3.1/ExpectedCode/task1.swift)
+
+### Тесты
+[/ExpectedCode/task1.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/3.1/Tests/task1.swift)
 
 ### Примеры
 | boys | girls    | массив girls после выполнения функции    |
@@ -28,13 +31,13 @@
 Для сортировки попрактикуйтесь с функцией sort().
 
 ### Начальный код задания
-[/initial_code/task2.py](https://github.com/netology-code/pd-simulator/blob/main/py/6.1/initial_code/task2.py)
-
-### Файл task2_env.swift (защищен от редактирования)
-[/initial_code/task2.py](https://github.com/netology-code/pd-simulator/blob/main/py/6.1/initial_code/task2.py)
+[/InitialCode/task2.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/3.1/InitialCode/task2.swift)
 
 ### Эталонное решение эксперта
-[/expected_code/task2.py](https://github.com/netology-code/pd-simulator/blob/main/py/6.1/expected_code/task2.py)
+[/ExpectedCode/task2.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/3.1/ExpectedCode/task2.swift)
+
+### Тесты
+[/ExpectedCode/task2.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/3.1/Tests/task2.swift)
 
 ### Примеры
 | boys | girls    | массив girls после выполнения функции    |
@@ -52,10 +55,13 @@
 Как вы считаете, будет ли разница в последовательности выполнения операций сортировки и фильтрации?
 
 ### Начальный код задания
-[/initial_code/task3.py](https://github.com/netology-code/pd-simulator/blob/main/py/6.1/initial_code/task3.py)
+[/InitialCode/task3.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/3.1/InitialCode/task3.swift)
 
 ### Эталонное решение эксперта
-[/expected_code/task3.py](https://github.com/netology-code/pd-simulator/blob/main/py/6.1/expected_code/task3.py)
+[/ExpectedCode/task3.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/3.1/ExpectedCode/task3.swift)
+
+### Тесты
+[/ExpectedCode/task3.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/3.1/Tests/task3.swift)
 
 ### Примеры
 | marks | результат    |
@@ -70,10 +76,13 @@
 Реализуйте функцию  `func rotate(array: [Int]) -> [Int]` таким образом, что бы в результате получить массив, в котором все элементы будут сдвинуты на 1 индек влево относительно входного массива `array` (первый элемент переместиться в конец).
 
 ### Начальный код задания
-[/initial_code/task4.py](https://github.com/netology-code/pd-simulator/blob/main/py/6.1/initial_code/task4.py)
+[/InitialCode/task3.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/3.1/InitialCode/task3.swift)
 
 ### Эталонное решение эксперта
-[/expected_code/task4.py](https://github.com/netology-code/pd-simulator/blob/main/py/6.1/expected_code/task4.py)
+[/ExpectedCode/task4.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/3.1/ExpectedCode/task4.swift)
+
+### Тесты
+[/ExpectedCode/task4.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/3.1/Tests/task4.swift)
 
 ### Примеры
 | array | результат    |

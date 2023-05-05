@@ -20,10 +20,13 @@
 В имеющейся функции `howManyDays(in month: String) { ... }` исправьте и дополните конструкцию if-else так, что бы для каждого входного параметра `month` возвращалось соответсвующее колличество выходных дней. Помните, что названия месяцев начинаются с заглавной буквы.
 
 ### Начальный код задания
-[/initial_code/task1.py](https://github.com/netology-code/pd-simulator/blob/main/py/6.1/initial_code/task1.py)
+[/InitialCode/task1.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/2.2/InitialCode/task1.swift)
 
 ### Эталонное решение эксперта
-[/expected_code/task1.py](https://github.com/netology-code/pd-simulator/blob/main/py/6.1/expected_code/task1.py)
+[/ExpectedCode/task1.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/2.2/ExpectedCode/task1.swift)
+
+### Тесты
+[/Tests/task1.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/2.2/Tests/task1.swift)
 
 ### Примеры
 | month | результат    |
@@ -40,13 +43,16 @@
 Увидев это, вы принимаете решение использовать конструкцию switch вместо if else для выполнения задания.
 
 ### Начальный код задания
-[/initial_code/task2.py](https://github.com/netology-code/pd-simulator/blob/main/py/6.1/initial_code/task2.py)
+[/InitialCode/task2.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/2.2/InitialCode/task2.swift)
 
 ### Файл task2_env.swift (защищен от редактирования)
-[/initial_code/task2.py](https://github.com/netology-code/pd-simulator/blob/main/py/6.1/initial_code/task2.py)
+[/InitialCode/task2.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/2.2/InitialCode/task2_env.swift)
 
 ### Эталонное решение эксперта
-[/expected_code/task2.py](https://github.com/netology-code/pd-simulator/blob/main/py/6.1/expected_code/task2.py)
+[/ExpectedCode/task2.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/2.2/ExpectedCode/task2.swift)
+
+### Тесты
+[/Tests/task22.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/2.2/Tests/task2.swift)
 
 ### Примеры
 | month | результат    |
@@ -64,10 +70,16 @@
 Параметр `month` имеет тип `enum Month { ... }`, описанный в файле `task3_env.swift`.
 
 ### Начальный код задания
-[/initial_code/task3.py](https://github.com/netology-code/pd-simulator/blob/main/py/6.1/initial_code/task3.py)
+[/InitialCode/task3.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/2.2/InitialCode/task3.swift)
+
+### Файл task3_env.swift (защищен от редактирования)
+[/InitialCode/task3.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/2.2/InitialCode/task3_env.swift)
 
 ### Эталонное решение эксперта
-[/expected_code/task3.py](https://github.com/netology-code/pd-simulator/blob/main/py/6.1/expected_code/task3.py)
+[/ExpectedCode/task3.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/2.2/ExpectedCode/task3.swift)
+
+### Тесты
+[/Tests/task3.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/2.2/Tests/task3.swift)
 
 ### Примеры
 | month | результат    |
@@ -96,7 +108,10 @@ https://metanit.com/swift/tutorial/3.8.php
 Реализуйте свойства `var description: String` и `var numberOfDays: Int`, дополнив и исправив в имеющемся коде места с `...`. Помните, что названия месяцев должны начинаться с заглавной буквы.
 
 ### Начальный код задания
-[/initial_code/task4.py](https://github.com/netology-code/pd-simulator/blob/main/py/6.1/initial_code/task4.py)
+[/InitialCode/task4.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/2.2/InitialCode/task4.swift)
 
 ### Эталонное решение эксперта
-[/expected_code/task4.py](https://github.com/netology-code/pd-simulator/blob/main/py/6.1/expected_code/task4.py)
+[/ExpectedCode/task4.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/2.2/ExpectedCode/task4.swift)
+
+### Тесты
+[/Tests/task4.py](https://github.com/AlexZhembl/Netology/blob/master/Trening/2.2/Tests/task4.swift)
