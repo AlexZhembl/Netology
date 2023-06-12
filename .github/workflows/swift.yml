@@ -36,9 +36,9 @@ jobs:
       - name: Build
         run: |
           echo 'start'
-          echo INPUT_env_choice
-          echo $INPUT_env_choice
-          echo ${INPUT_env_choice}
+          echo INPUT_ENV_CHOICE
+          echo $INPUT_ENV_CHOICE
+          echo ${INPUT_ENV_CHOICE}
           echo 'vse'
           #!/bin/bash
           if [ ${env_choice} == "uat" ]; then echo 'normalno'; else echo 'ploho'; fi
