@@ -13,7 +13,6 @@ on:
       env_choice:
         type: choice
         description: Select the environment
-        default: uat
         options:
         - uat
         - devint
@@ -41,4 +40,4 @@ jobs:
           echo ${INPUT_ENV_CHOICE}
           echo 'vse'
           #!/bin/bash
-          if [ ${{ github.event.inputs.env_choice }} == "uat" ]; then echo 'normalno'; else echo 'ploho'; fi
+          if [ ${{ github.event.inputs.env_choice || 'uat' }} == "uat" ]; then echo 'normalno'; else echo 'ploho'; fi
