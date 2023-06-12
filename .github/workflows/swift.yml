@@ -10,18 +10,28 @@ on:
     branches: [ "master" ]
   workflow_dispatch:
     inputs:
-      environment:
-        type: environment
+      env_choice:
+        type: choice
         description: Select the environment
+        options:
+        - uat
+        - devint
+
 
 jobs:
-  build:
-
-    runs-on: macos-latest
-
-    steps:
+  runs-on: macos-latest
+  variables:
+    env_name: test
+    feature_flag: ''
+  rules:
+    - if: '$env_choice == "uat"'
+      variables: 
+        env_name: uat
+        feature_flag: FEATURE_
+    - if: '$VAR =~ /pattern/'
+      when: manual
+    - when: on_success
+  steps:
     - uses: actions/checkout@v3
     - name: Build
-      run: swift build -v
-    - name: Run tests
-      run: swift test -v
+      run: echo '123'
