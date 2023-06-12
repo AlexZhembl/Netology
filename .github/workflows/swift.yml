@@ -34,4 +34,5 @@ jobs:
     steps:
       - name: Build
         run: |
-        if [ ${env_choice} == "uat" ]; then echo 'normalno'; else echo 'ploho'; fi
+          #!/bin/bash
+          if [ ${env_choice} == "uat" ]; then echo 'normalno'; else echo 'ploho'; fi
