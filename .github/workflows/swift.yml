@@ -30,7 +30,7 @@ jobs:
  #   - if: '$VAR =~ /pattern/'
 #      when: manual
 #    - when: on_success
-  runs-on: macos-latest
-  steps:
-    - name: Build
-      run: echo '123'
+    runs-on: macos-latest
+    steps:
+      - name: Build
+        run: echo '123'
