@@ -17,21 +17,20 @@ on:
         - uat
         - devint
 
-
 jobs:
+  build:
+   # variables:
+   #   env_name: test
+   #   feature_flag: ''
+   # rules:
+   # - if: '$env_choice == "uat"'
+    #  variables: 
+   #     env_name: uat
+  #      feature_flag: FEATURE_
+ #   - if: '$VAR =~ /pattern/'
+#      when: manual
+#    - when: on_success
   runs-on: macos-latest
-  variables:
-    env_name: test
-    feature_flag: ''
-  rules:
-    - if: '$env_choice == "uat"'
-      variables: 
-        env_name: uat
-        feature_flag: FEATURE_
-    - if: '$VAR =~ /pattern/'
-      when: manual
-    - when: on_success
   steps:
-    - uses: actions/checkout@v3
     - name: Build
       run: echo '123'
