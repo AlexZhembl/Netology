@@ -33,4 +33,5 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Build
-        run: echo '123'
+        run: |
+        if [ ${env_choice} == "uat" ]; then echo 'normalno'; else echo 'ploho'; fi
